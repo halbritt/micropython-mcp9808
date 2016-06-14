@@ -32,7 +32,7 @@ is set to maximum resolution.
 from machine import Pin, I2C
 import mcp9808
 
-i2c = I2C(scl=Pin("D1"), sda=Pin("D2"), freq=10000)
+i2c = I2C(scl=Pin(5), sda=Pin(4), freq=10000)
 mcp = mcp9808.MCP9808(i2c=i2c)
 mcp.set_resolution(mcp9808.T_RES_AVG)
 temp = mcp.get_temp()
