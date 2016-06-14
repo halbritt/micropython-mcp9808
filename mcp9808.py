@@ -1,18 +1,20 @@
+import array
 from machine import I2C
 
-R_CFG    = const(1)
-R_B_UP   = const(2)
-R_B_LOW  = const(3)
+R_CFG = const(1)
+R_B_UP = const(2)
+R_B_LOW = const(3)
 R_B_CRIT = const(4)
 R_A_TEMP = const(5)
-R_M_ID   = const(6)
-R_D_ID   = const(7)
-R_T_RES  = const(8)
+R_M_ID = const(6)
+R_D_ID = const(7)
+R_T_RES = const(8)
 
 T_RES_MIN = const(0)
 T_RES_LOW = const(1)
 T_RES_AVG = const(2)
 T_RES_MAX = const(3)
+
 
 class MCP9808(object):
     """
@@ -25,7 +27,7 @@ class MCP9808(object):
         Initialize a sensor object on the given I2C bus and accessed by the
         given address.
         """
-        if i2c == None or i2c.__class__ != I2C:
+        if i2c is None or i2c.__class__ != I2C:
             raise ValueError('I2C object needed as argument!')
         self._i2c = i2c
         self._addr = addr
@@ -33,9 +35,15 @@ class MCP9808(object):
 
     def _send(self, buf):
         """
-        Sends the given bufer object over I2C to the sensor.
+        Sends the given buffer object over I2C to the sensor.
         """
-        self._i2c.send(buf, self._addr)
+        # self._i2c.send(buf, self._addr)
+        if not isinstance(buf, array.array):
+            _buf = array.array('H')
+            _buf.append(buf)
+        else:
+            _buf = buf
+        self._i2c.writeto(self._addr, _buf)
 
     def _recv(self, n):
         """
@@ -43,7 +51,8 @@ class MCP9808(object):
         as an argument.
         Returns a bytearray containing the result.
         """
-        return self._i2c.recv(n, self._addr)
+        # return self._i2c.recv(n, self._addr)
+        return self._i2c.readfrom(self._addr, n)
 
     def _check_device(self):
         """
@@ -116,7 +125,13 @@ class MCP9808(object):
         """
         if r not in [T_RES_MIN, T_RES_LOW, T_RES_AVG, T_RES_MAX]:
             raise ValueError('Invalid temperature resolution requested!')
-        b = bytearray()
+        #b = bytearray()
+        
+        # TODO: fix the double _send
+        b = array.array('H')
         b.append(R_T_RES)
+        self._send(b)
+
+        b = array.array('H')
         b.append(r)
         self._send(b)
