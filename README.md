@@ -1,4 +1,4 @@
-# micropython-mcp9808
+# micropython-mcp9808 - ESP8266/WiPy version
 This repository contains a MicroPython "driver" implementation for the MCP9808
 temperature sensor from Microchip.
 
@@ -23,3 +23,19 @@ is set to maximum resolution.
 ## Not yet implemented
 * Alert temperature boundaries, hysteresis and comparator mode
 * Interrupt mode
+
+## Usage
+
+~~~python
+# 5 : D1 : SDL
+# 4 : D2 : SDA
+from machine import Pin, I2C
+import mcp9808
+
+i2c = I2C(scl=Pin("D1"), sda=Pin("D2"), freq=10000)
+mcp = mcp9808.MCP9808(i2c=i2c)
+mcp.set_resolution(mcp9808.T_RES_AVG)
+temp = mcp.get_temp()
+
+print "Temperature is: {}".format(temp)
+~~~
