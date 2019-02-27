@@ -85,6 +85,7 @@ class MCP9808(object):
         b.append(cfg[1])
         self._send(b)
 
+
     def get_temp(self):
         """
         Read temperature in degree celsius and return float value.
@@ -94,7 +95,7 @@ class MCP9808(object):
         u = (raw[0] & 0x0f) << 4
         l = raw[1] / 16
         if raw[0] & 0x10 == 0x10:
-            temp = 256 - (u + l)
+            temp = (u + l) - 256.0
         else:
             temp = u + l
         return temp
